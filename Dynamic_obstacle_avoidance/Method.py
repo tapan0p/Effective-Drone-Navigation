@@ -1,9 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# Time: 2021-3-10
-# Author: ZYunfei
-# Name: Dynamic obstacle avoidance with reinforcement learning
-# File func: various methods
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,16 +8,13 @@ from Multi_obstacle_environment_test import Environment
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def getReward(obsCenter, qNext, q, qBefore, iifds):
-    """
-    获取强化学习奖励值函数
-    """
     distance = iifds.distanceCost(qNext, obsCenter)
     flag = True if distance <= iifds.obsR else False
     reward = 0
-    if flag: # 与障碍物有交点
+    if flag: 
         reward += (distance - iifds.obsR)/iifds.obsR - 1
     else:
-        if distance < iifds.obsR + 0.4:   # 威胁区
+        if distance < iifds.obsR + 0.4:   
             tempR = iifds.obsR + 0.4
             reward += (distance - tempR)/tempR-0.3
         distance1 = iifds.distanceCost(qNext, iifds.goal)
@@ -31,22 +23,12 @@ def getReward(obsCenter, qNext, q, qBefore, iifds):
             reward += -distance1/distance2
         else:
             reward += -distance1/distance2 + 3
-        """奖励径直轨迹"""
-        # q2qNext = qNext - q
-        # q2goal = iifds.goal - q
-        # theta = np.arccos(np.clip(q2qNext.dot(q2goal)/iifds.calVecLen(q2qNext)/iifds.calVecLen(q2goal),-1,1))
-        # reward += -abs(theta) / (2*np.pi) * 0.2
-
-        # if qBefore[0] is not None:
-        #     x1, gam1, xres, gamres, _ = iifds.kinematicConstrant(q, qBefore, qNext)
-        #     xDot = np.abs(x1 - xres)
-        #     gamDot = np.abs(gam1 - gamres)
-        #     reward += (- xDot / iifds.xmax - gamDot / iifds.gammax) * 0.5
+        
+        
 
     return reward
 
 def get_reward_multiple(env,qNext,dic):
-    """多动态障碍环境获取reward函数"""
     reward = 0
     distance = env.distanceCost(qNext,dic['obsCenter'])
     if distance<=dic['obs_r']:
@@ -65,10 +47,6 @@ def get_reward_multiple(env,qNext,dic):
 
 
 def drawActionCurve(actionCurveList):
-    """
-    :param actionCurveList: 动作值列表
-    :return: None 绘制图像
-    """
     plt.figure()
     for i in range(actionCurveList.shape[1]):
         array = actionCurveList[:, i]
@@ -88,12 +66,11 @@ def checkPath(apf):
         sum += apf.distanceCost(apf.path[i,:], apf.path[i+1,:])
     for i, j in zip(apf.path, apf.dynamicSphere_Path):
         if apf.distanceCost(i,j) <= apf.dynamicSphere_R:
-            print('与障碍物有交点，轨迹距离为：', sum)
+            print(sum)
             return
-    print('与障碍物无交点，轨迹距离为：', sum)
+    print(sum)
 
 def transformAction(actionBefore, actionBound, actionDim):
-    """将强化学习输出的动作映射到指定的动作范围"""
     actionAfter = []
     for i in range(actionDim):
         action_i = actionBefore[i]
@@ -103,8 +80,7 @@ def transformAction(actionBefore, actionBound, actionDim):
 
 
 def test(iifds, pi, conf):
-    """动态单障碍环境测试训练效果"""
-    iifds.reset()    # 重置环境
+    iifds.reset() 
     q = iifds.start
     qBefore = [None, None, None]
     rewardSum = 0
@@ -115,7 +91,6 @@ def test(iifds, pi, conf):
         obs = torch.as_tensor(obs, dtype=torch.float, device=device)
         action = pi(obs).cpu().detach().numpy()
         action = transformAction(action, conf.actionBound, conf.act_dim)
-        # 与环境交互
         qNext = iifds.getqNext(q, obsCenter, vObs, action[0], action[1], action[2], qBefore)
         rewardSum += getReward(obsCenterNext, qNext, q, qBefore, iifds)
 
@@ -127,9 +102,8 @@ def test(iifds, pi, conf):
     return rewardSum
 
 def test_multiple(pi, conf):
-    """动态多障碍环境测试模型效果"""
     reward_list = []
-    for index in range(1,7):      # 从1-6一共6个测试环境，遍历测试
+    for index in range(1,7):     
         env = Environment(index)
         env.reset()
         q = env.start
@@ -153,7 +127,6 @@ def test_multiple(pi, conf):
 
 
 def setup_seed(seed):
-    """设置随机数种子函数"""
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)
