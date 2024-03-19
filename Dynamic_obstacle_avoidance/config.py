@@ -1,10 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# Time: 2021-4-2
-# Author: ZYunfei
-# Name: Dynamic obstacle avoidance with reinforcement learning
-# File func: config file
-"""配置参数文件"""
+
 class Config:
     def __init__(self):
         self.obs_dim = 9
