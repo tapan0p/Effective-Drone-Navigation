@@ -1,9 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# Time: 2021-1-15
-# Author: ZYunfei
-# Name: MADDPG-APF
-# File func: arg func
 
 import argparse
 import torch
