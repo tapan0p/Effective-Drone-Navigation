@@ -1,12 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# Time: 2021-1-15
-# Author: ZYunfei
-# Name: MADDPG-APF
-# File func: model(actor and critic) func
-"""
-actor 和 critic网络架构来源于openAI开源代码spinningup强化学习算法库，高性能。
-"""
+
 import torch
 import torch.nn as nn
 
@@ -39,4 +31,4 @@ class MLPQFunction(nn.Module):
 
     def forward(self, obs, act):
         q = self.q(torch.cat([obs, act], dim=1))
-        return torch.squeeze(q, -1) # Critical to ensure q has right shape.
+        return torch.squeeze(q, -1) 
