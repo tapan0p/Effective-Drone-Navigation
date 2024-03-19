@@ -1,10 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-# Time: 2021-3-29
-# Author: ZYunfei
-# File func: various dynamic obstacle environment
+
 import numpy as np
-"""提供多个单障碍物动态环境用于训练UAV"""
 def obstacle1(time_now, time_step):
     obs_ref = np.array([5,5,5],dtype=float)
     dic = {}
@@ -183,7 +178,6 @@ def obstacle8(time_now, time_step):
 
     return time_now, dic
 
-"""生成一个函数列表"""
 obs_list = [obstacle1, obstacle2, obstacle3, obstacle4,
             obstacle5, obstacle6, obstacle7, obstacle8]
 
